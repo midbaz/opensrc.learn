@@ -1,0 +1,23 @@
+#!/bin/bash
+
+#install vmware workstation modules after system update
+#author: mbaz
+#date: sep 20,2023
+
+#prompt to enter sudo passwd
+read -sp "please enter sudo password: " pass
+
+#clone vmware-host-modules from git repo to the destination modules
+git clone https://github.com/mkubecek/vmware-host-modules.git modules && cd modules
+
+#get vmware-workstation release number
+rel_num=`vmware -v | grep -Po "(?<=\s)\d+\S+"`
+
+#checkout to your version branch
+git checkout workstation-$rel_num
+
+#install modules 
+make && echo $pass | sudo -S make install && sudo -S systemctl restart vmware.service
+
+#removing repo
+rm -rf ../modules
